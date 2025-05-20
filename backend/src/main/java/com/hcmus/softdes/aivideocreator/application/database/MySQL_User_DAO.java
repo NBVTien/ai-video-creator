@@ -31,7 +31,7 @@ public class MySQL_User_DAO implements UserRepository {
     @Override
     public List<User> findAllUsers() {
         List<User> users = new ArrayList<>();
-        String sql = "SELECT id, username, email, password, dateOfBirth, createdAt, updatedAt FROM user";
+        String sql = "SELECT id, username, email, password, dateOfBirth, createdAt, updatedAt FROM User";
 
         try (Connection conn = DatabaseConnector.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql);
@@ -50,7 +50,7 @@ public class MySQL_User_DAO implements UserRepository {
 
     @Override
     public void saveUser(User user) {
-        String sql = "INSERT INTO user (id, username, email, password, dateOfBirth, createdAt, updatedAt) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO User (id, username, email, password, dateOfBirth, createdAt, updatedAt) VALUES (?, ?, ?, ?, ?, ?, ?)";
 
         try (Connection conn = DatabaseConnector.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -76,7 +76,7 @@ public class MySQL_User_DAO implements UserRepository {
 
     @Override
     public User findUserById(UUID userId) {
-        String sql = "SELECT id, username, email, password, dateOfBirth, createdAt, updatedAt FROM user WHERE id = ?";
+        String sql = "SELECT id, username, email, password, dateOfBirth, createdAt, updatedAt FROM User WHERE id = ?";
         User user = null;
 
         try (Connection conn = DatabaseConnector.getConnection();
@@ -97,7 +97,7 @@ public class MySQL_User_DAO implements UserRepository {
 
     @Override
     public User findUserByUsername(String username) {
-        String sql = "SELECT id, username, email, password, dateOfBirth, createdAt, updatedAt FROM user WHERE username = ?";
+        String sql = "SELECT id, username, email, password, dateOfBirth, createdAt, updatedAt FROM User WHERE username = ?";
         User user = null;
 
         try (Connection conn = DatabaseConnector.getConnection();
@@ -122,7 +122,7 @@ public class MySQL_User_DAO implements UserRepository {
             System.err.println("Mismatch between userId parameter and user object's ID. Aborting update.");
             return;
         }
-        String sql = "UPDATE user SET username = ?, email = ?, password = ?, dateOfBirth = ?, updatedAt = ? WHERE id = ?";
+        String sql = "UPDATE User SET username = ?, email = ?, password = ?, dateOfBirth = ?, updatedAt = ? WHERE id = ?";
 
         try (Connection conn = DatabaseConnector.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -150,7 +150,7 @@ public class MySQL_User_DAO implements UserRepository {
 
     @Override
     public void deleteUser(UUID userId) {
-        String sql = "DELETE FROM user WHERE id = ?";
+        String sql = "DELETE FROM User WHERE id = ?";
 
         try (Connection conn = DatabaseConnector.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
