@@ -171,9 +171,9 @@ public class MySQL_User_DAO implements UserRepository {
         String username = rs.getString("username");
         String email = rs.getString("email");
         String password = rs.getString("password");
-        Date dateOfBirth = rs.getDate("date_of_birth") != null ? new Date(rs.getDate("date_of_birth").getTime()) : null;
-        LocalDateTime createdAt = rs.getTimestamp("created_at").toLocalDateTime();
-        LocalDateTime updatedAt = rs.getTimestamp("updated_at").toLocalDateTime();
+        Date dateOfBirth = rs.getDate("dateOfBirth") != null ? new Date(rs.getDate("dateOfBirth").getTime()) : null;
+        LocalDateTime createdAt = rs.getTimestamp("createdAt").toLocalDateTime();
+        LocalDateTime updatedAt = rs.getTimestamp("updatedAt").toLocalDateTime();
 
         return new User(id, username, email, password, dateOfBirth, createdAt, updatedAt);
     }
