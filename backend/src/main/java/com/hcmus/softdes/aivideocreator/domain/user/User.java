@@ -14,14 +14,14 @@ public class User extends Entity {
     private String password;
     private Date dateOfBirth;
 
-    protected User(
-        UUID id,
-        String username,
-        String email,
-        String password,
-        Date dateOfBirth,
-        LocalDateTime createdAt,
-        LocalDateTime updatedAt
+    public User(
+            UUID id,
+            String username,
+            String email,
+            String password,
+            Date dateOfBirth,
+            LocalDateTime createdAt,
+            LocalDateTime updatedAt
     ) {
         super(id, createdAt, updatedAt);
         this.username = username;
