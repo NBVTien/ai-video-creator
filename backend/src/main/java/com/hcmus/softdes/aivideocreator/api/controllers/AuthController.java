@@ -78,4 +78,23 @@ public class AuthController {
         var response = new AuthResponse(applicationUser, jwtToken);
         return ResponseEntity.ok().headers(headers).body(response);
     }
+    @PostMapping("/dashboard")
+    public ResponseEntity<String> dashboard(@RequestBody LoginRequest request) {
+
+        UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(request.username(), request.password());
+
+        Authentication authentication = authenticationManager.authenticate(token);
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+
+        var user = ((User) authentication.getPrincipal());
+        var applicationUser = userService.findUserByUsername(user.getUsername());
+
+        String jwtToken = JwtUtils.generateToken(user, applicationUser.getId().toString());
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Set-Cookie", "authorization=" + jwtToken + "; Path=/; HttpOnly");
+
+        return ResponseEntity.ok().headers(headers).body("Dashboard");
+
+    }
 }

@@ -27,6 +27,13 @@ export const authApi = {
       email: data.email,
       password: data.password
     }),
+
+    dashboard: (data: LoginRequest) => {
+      apiClient.post<LoginResponse>('/auth/dashboard', {
+            username: data.username,
+            password: data.password
+        }).then(response => response.data)
+    }
 };
 
 export default apiClient;
