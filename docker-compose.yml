@@ -63,6 +63,46 @@ services:
     environment:
       - NEXT_PUBLIC_API_URL=http://localhost:8080
 
+  react-video-editor:
+    build:
+      context: ./react-video-editor
+      dockerfile: Dockerfile
+      target: dev
+    container_name: aivideocreator-react-video-editor
+    restart: always
+    ports:
+      - "5173:5173"
+    networks:
+      - app-network
+    volumes:
+      - ./react-video-editor:/app
+      - /app/node_modules
+      - ./react-video-editor/.env.local:/app/.env.local
+    working_dir: /app
+    command: npm run dev
+    depends_on:
+      - frontend
+
+  video-renderer-site:
+    build:
+      context: ./video-renderer-site
+      dockerfile: Dockerfile
+      target: dev
+    container_name: aivideocreator-video-renderer-site
+    restart: always
+    ports:
+      - "3100:3100"
+    networks:
+      - app-network
+    volumes:
+      - ./video-renderer-site:/app
+      - /app/node_modules
+      - ./video-renderer-site/.env.local:/app/.env.local
+    working_dir: /app
+    command: node server.js
+    depends_on:
+      - backend
+
 networks:
   app-network:
     driver: bridge
