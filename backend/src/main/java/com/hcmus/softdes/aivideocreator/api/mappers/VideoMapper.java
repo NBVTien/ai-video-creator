@@ -12,9 +12,9 @@ public class VideoMapper {
             videoDto.getTitle(),
             videoDto.getDescription(),
             videoDto.getFilePath(),
-            videoDto.getStatus(),
-            videoDto.getPlatform(),
-            videoDto.getDuration(),
+            null, // Status is not provided in VideoDto, set to null or default
+            null, // Platform is not provided in VideoDto, set to null or default
+            0, // Duration is not provided in VideoDto, set to 0 or default
             videoDto.getProjectId(),
             videoDto.getUserId()
         );
@@ -25,13 +25,8 @@ public class VideoMapper {
             .title(video.getTitle())
             .description(video.getDescription())
             .filePath(video.getFilePath())
-            .status(video.getStatus())
-            .platform(video.getPlatform())
-            .duration(video.getDuration())
             .projectId(video.getProjectId())
             .userId(video.getUserId())
-            .createdAt(video.getCreatedAt().toString())
-            .updatedAt(video.getUpdatedAt().toString())
             .build();
     }
 }

@@ -27,16 +27,13 @@ public class VideoController {
     }
 
     @PostMapping
-    @Operation(summary = "Create a new video",
-            description = "Create a new video with the provided details.")
-    public ResponseEntity<VideoDto> createVideo (@RequestBody VideoDto request){
-        // check if the request is valid
-        if (request.getTitle() == null || request.getDescription() == null) {
+    @Operation(summary = "Create a new video from local file",
+            description = "Create a new video using a local file path.")
+    public ResponseEntity<VideoDto> createVideo(@RequestBody VideoDto request) {
+        if (request.getTitle() == null || request.getDescription() == null || request.getFilePath() == null) {
             return ResponseEntity.badRequest().build();
         }
-
-        Video videoData = VideoMapper.toVideo(request);
-        videoService.createVideo(videoData.getTitle(), videoData.getDescription(), videoData.getUserId());
+        videoService.createVideo(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(request);
     }
     @GetMapping("/videos/{videoId}")

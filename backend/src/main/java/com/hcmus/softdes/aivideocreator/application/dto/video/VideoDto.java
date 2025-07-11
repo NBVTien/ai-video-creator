@@ -17,9 +17,4 @@ public class VideoDto {
     private String filePath;
     private UUID projectId;
     private UUID userId;
-    private Status status;
-    private int duration;
-    private Platform platform;
-    private String createdAt;
-    private String updatedAt;
 }

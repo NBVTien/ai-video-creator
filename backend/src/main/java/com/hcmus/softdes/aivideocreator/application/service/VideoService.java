@@ -1,6 +1,7 @@
 package com.hcmus.softdes.aivideocreator.application.service;
 
 import com.hcmus.softdes.aivideocreator.application.common.repositories.VideoRepository;
+import com.hcmus.softdes.aivideocreator.application.dto.video.VideoDto;
 import com.hcmus.softdes.aivideocreator.domain.enums.Platform;
 import com.hcmus.softdes.aivideocreator.domain.enums.Status;
 import com.hcmus.softdes.aivideocreator.domain.model.Video;
@@ -26,35 +27,21 @@ public class VideoService {
         if (r2Client == null) {
             throw new IllegalArgumentException("R2Client cannot be null");
         }
-        // this.assignmentRepository = null; // Assuming assignmentRepository is not used in this service
     }
 
-    public void createVideo(String title, String description, UUID userId) {
-        if (title == null || description == null || userId == null) {
+    public void createVideo(VideoDto videoDto) {
+        if (videoDto.getTitle() == null || videoDto.getDescription() == null || videoDto.getUserId() == null) {
             throw new IllegalArgumentException("Video title, description, and file path cannot be null");
         }
-//        List<Asset> projectAssets = assetRepository.findByProjectId(projectId);
-//        if (projectAssets.isEmpty()) {
-//            throw new IllegalArgumentException("No assets found for project ID: " + projectId);
-//        }
-        // request to API create video
-        // Assuming the API returns a video ID or similar identifier
-        // Here we create a new Video object with the provided details
-        // and save it to the repository
-        // This is a placeholder for the actual video creation logic
-        if (userId == null) {
+        if (videoDto.getUserId() == null) {
             throw new IllegalArgumentException("User ID cannot be null");
         }
-//        MultiPartFile videoGenerated= videoGenerator.generateVideo(title, description, userId);
-//        String key = userId.toString() + "/" + title.replaceAll(" ", "_") + ".mp4";
-//        String filePath = r2Client.uploadVideo(key, videoGenerated , videoGenerated.getSize());
+        Video videoData = Video.create(videoDto.getTitle(), videoDto.getDescription(), videoDto.getFilePath(), Status.PENDING, Platform.NONE, 0, videoDto.getProjectId(), videoDto.getUserId());
 
-//        Video videoData = Video.create(title, description, filePath, Status.PENDING, Platform.NONE, 0, null, userId);
-
-//        videoRepository.saveVideo(videoData);
-//        if (videoRepository.getVideo(videoData.getId()) == null) {
-//            throw new RuntimeException("Failed to create video");
-//        }
+        videoRepository.saveVideo(videoData);
+        if (videoRepository.getVideo(videoData.getId()) == null) {
+            throw new RuntimeException("Failed to create video");
+        }
     }
 
     public Video getVideo(UUID videoId) {
