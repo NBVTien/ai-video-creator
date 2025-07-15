@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import Image from "next/image";
 import { useUploadToYouTube, useUploadToTikTok, useDeleteVideo, useGetYouTubeStats, useUpdateVideo } from "../../videos/api/video";
+import { useSession, signIn } from "next-auth/react";
 
 interface Video {
   id: string;
@@ -34,6 +35,9 @@ const VideoModal: React.FC<VideoModalProps> = ({ isOpen, video, onClose }) => {
   const [selectedPlatform, setSelectedPlatform] = useState<string>("YOUTUBE");
   const [imageError, setImageError] = useState(false);
   const [deleted, setDeleted] = useState(false);
+
+  // Authentication hooks
+  const { data: session } = useSession();
 
   // Upload hooks
   const uploadToYouTube = useUploadToYouTube();
@@ -110,6 +114,32 @@ const VideoModal: React.FC<VideoModalProps> = ({ isOpen, video, onClose }) => {
       return;
     }
 
+    // Check if user is trying to share to YouTube
+    if (selectedPlatform === "YOUTUBE") {
+      // Check if user has Google authentication by looking at the session
+      // For Google users, the session will contain user data with Google OAuth tokens
+      const hasGoogleAuth = session?.user?.accessToken && session?.user?.email;
+      
+      if (!hasGoogleAuth) {
+        // User is not authenticated with Google, show informative message
+        const userConfirmed = confirm(
+          "YouTube Upload Requires Google Authentication\n\n" +
+          "To upload videos to YouTube, you need to be logged in with your Google account. " +
+          "This allows us to access your YouTube channel with proper permissions.\n\n" +
+          "Would you like to sign in with Google now?"
+        );
+        
+        if (userConfirmed) {
+          // Redirect to Google OAuth with YouTube scope
+          await signIn('google', { 
+            callbackUrl: window.location.href, // Return to current page after login
+            redirect: true
+          });
+        }
+        return;
+      }
+    }
+
     try {
       // Convert video file path to actual File object
       console.log("🔄 Preparing video file for upload...");
@@ -145,8 +175,8 @@ const VideoModal: React.FC<VideoModalProps> = ({ isOpen, video, onClose }) => {
           },
           onError: (error: Error) => {
             console.error("❌ Upload failed:", error);
-            const errorMessage = error.message || "Unknown error occurred";
-            alert(`❌ Failed to upload to YouTube:\n\n${errorMessage}`);
+            // const errorMessage = error.message || "Unknown error occurred";
+            alert(`❌ Need login by Google to upload to YouTube`);
           }
         });
       } else if (selectedPlatform === "TIKTOK") {
@@ -769,6 +799,49 @@ const VideoModal: React.FC<VideoModalProps> = ({ isOpen, video, onClose }) => {
                         ))}
                       </div>
                     </div>
+
+                    {/* Google Auth Status for YouTube */}
+                    {selectedPlatform === "YOUTUBE" && (
+                      <div
+                        style={{
+                          padding: "16px",
+                          backgroundColor: session?.user?.accessToken ? "#f0fdf4" : "#fef3c7",
+                          border: `1px solid ${session?.user?.accessToken ? "#bbf7d0" : "#f59e0b"}`,
+                          borderRadius: "12px",
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "12px",
+                        }}
+                      >
+                        <div>
+                          <p
+                            style={{
+                              fontSize: "14px",
+                              fontWeight: "600",
+                              color: session?.user?.accessToken ? "#16a34a" : "#92400e",
+                              margin: 0,
+                              fontFamily: "'Inter', sans-serif",
+                            }}
+                          >
+                            {session?.user?.accessToken 
+                              ? "✓ Google Connected" 
+                              : "⚠️ Google Authentication Required"}
+                          </p>
+                          <p
+                            style={{
+                              fontSize: "12px",
+                              color: session?.user?.accessToken ? "#16a34a" : "#92400e",
+                              margin: "2px 0 0 0",
+                              fontFamily: "'Inter', sans-serif",
+                            }}
+                          >
+                            {session?.user?.accessToken 
+                              ? "Ready to upload to YouTube" 
+                              : "Click 'Share to YouTube' to connect with Google"}
+                          </p>
+                        </div>
+                      </div>
+                    )}
 
                     {/* Current Platform Status */}
                     {video.platform && video.platform !== "NONE" && (

@@ -34,42 +34,6 @@ export const VIDEO_TEMPLATES: VideoTemplate[] = [
     recommended: true
   },
   {
-    id: 'youtube-shorts',
-    name: 'YouTube Shorts',
-    platform: 'YouTube',
-    width: 1080,
-    height: 1920,
-    aspectRatio: '9:16',
-    fps: 30,
-    description: 'Nội dung ngắn theo chiều dọc',
-    icon: '📱',
-    maxDuration: 60
-  },
-  {
-    id: 'tiktok',
-    name: 'TikTok',
-    platform: 'TikTok',
-    width: 1080,
-    height: 1920,
-    aspectRatio: '9:16',
-    fps: 30,
-    description: 'Video theo chiều dọc cho TikTok',
-    icon: '🎵',
-    maxDuration: 180
-  },
-  {
-    id: 'instagram-story',
-    name: 'Instagram Story',
-    platform: 'Instagram',
-    width: 1080,
-    height: 1920,
-    aspectRatio: '9:16',
-    fps: 30,
-    description: 'Stories và Reels',
-    icon: '📸',
-    maxDuration: 60
-  },
-  {
     id: 'instagram-post',
     name: 'Instagram Post',
     platform: 'Instagram',
@@ -168,7 +132,6 @@ export const FPS_OPTIONS = [
 ];
 
 export const FIT_MODES = [
-  { value: 'cover', label: 'Cover', description: 'Lấp đầy màn hình, có thể cắt' },
-  { value: 'contain', label: 'Contain', description: 'Vừa vặn hoàn toàn, có thể có viền đen' },
+  { value: 'cover', label: 'Cover', description: 'Lấp đầy màn hình, có thể cắt (Đề xuất)' },
   { value: 'fill', label: 'Fill', description: 'Kéo dài đến kích thước chính xác' }
 ];
