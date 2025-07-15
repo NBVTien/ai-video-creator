@@ -3,7 +3,6 @@ package com.hcmus.softdes.aivideocreator.api.controllers;
 import com.hcmus.softdes.aivideocreator.application.dto.upload.PlatformUploadResponse;
 import com.hcmus.softdes.aivideocreator.application.service.UserService;
 import com.hcmus.softdes.aivideocreator.application.service.VideoService;
-import com.hcmus.softdes.aivideocreator.infrastructure.external.upload.TikTokUploadService;
 import com.hcmus.softdes.aivideocreator.infrastructure.external.upload.YouTubeUploadService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -22,16 +21,13 @@ import java.util.UUID;
 public class UploadController {
 
     private final YouTubeUploadService youtubeService;
-    private final TikTokUploadService tiktokService;
     private final UserService authService;
     private final VideoService videoService;
 
     @Autowired
     public UploadController(YouTubeUploadService youtubeService,
-                            TikTokUploadService tiktokService,
                             UserService authService, VideoService videoService) {
         this.youtubeService = youtubeService;
-        this.tiktokService = tiktokService;
         this.authService = authService;
         this.videoService = videoService;
     }
@@ -60,13 +56,4 @@ public class UploadController {
         return ResponseEntity.ok(response);
     }
 
-    @PostMapping("/tiktok")
-    public ResponseEntity<String> uploadToTikTok(@RequestParam("file") MultipartFile file,
-                                                 @RequestParam String title) throws Exception {
-        File tempFile = File.createTempFile("video", ".mp4");
-        file.transferTo(tempFile);
-        String result = tiktokService.uploadVideo(tempFile, title);
-        tempFile.delete();
-        return ResponseEntity.ok(result);
-    }
 }
