@@ -4,8 +4,6 @@ public class PlatformUploadResponse {
     private String message;
     private String videoId;
 
-    public PlatformUploadResponse() {}
-
     public PlatformUploadResponse(String message, String videoId) {
         this.message = message;
         this.videoId = videoId;
