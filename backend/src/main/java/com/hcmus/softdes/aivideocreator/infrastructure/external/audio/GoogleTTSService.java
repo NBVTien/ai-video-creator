@@ -14,10 +14,28 @@ public class GoogleTTSService implements TtsService {
         this.ttsClient = ttsClient;
     }
 
+    private String normalizeLanguageCode(String languageCode) {
+        switch (languageCode) {
+            case "vi":
+                return "vi-VN";
+            case "en":
+                return "en-US";
+            case "ja":
+                return "ja-JP";
+            case "ko":
+                return "ko-KR";
+            case "zh":
+                return "zh-CN";
+            default:
+                return languageCode;
+        }
+    }
+
     private String getVoiceName(String languageCode, String gender) {
+        String normalizedCode = normalizeLanguageCode(languageCode);
         String genderSuffix = "FEMALE".equalsIgnoreCase(gender) ? "A" : "D";
         
-        switch (languageCode) {
+        switch (normalizedCode) {
             case "vi-VN":
                 return "vi-VN-Neural2-" + genderSuffix;
             case "en-US":
@@ -29,16 +47,18 @@ public class GoogleTTSService implements TtsService {
             case "zh-CN":
                 return "zh-CN-Neural2-" + genderSuffix;
             default:
-                return languageCode + "-Standard-" + genderSuffix;
+                return normalizedCode + "-Standard-" + genderSuffix;
         }
     }
 
     @Override
     public byte[] synthesize(TtsRequest request) {
         try {
+            String normalizedLanguageCode = normalizeLanguageCode(request.getLanguageCode());
+            
             SynthesisInput input = SynthesisInput.newBuilder().setText(request.getText()).build();
             VoiceSelectionParams voice = VoiceSelectionParams.newBuilder()
-                    .setLanguageCode(request.getLanguageCode())
+                    .setLanguageCode(normalizedLanguageCode)
                     .setName(getVoiceName(request.getLanguageCode(), request.getGender()))
                     .setSsmlGender(SsmlVoiceGender.valueOf(request.getGender().toUpperCase()))
                     .build();

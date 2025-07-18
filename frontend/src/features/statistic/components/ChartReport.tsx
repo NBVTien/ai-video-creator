@@ -1,34 +1,72 @@
 "use client";
-import React from "react";
+import React, { useMemo } from "react";
 import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 import { TrendingUpIcon, BarChartIcon, PieChartIcon } from "lucide-react";
+import { useListVideos } from "@/features/videos/api/video";
+import { getAllVideoStats } from "@/features/statistic/api/statistic";
+import { useQuery } from "@tanstack/react-query";
 
 export default function ChartReport() {
-  // Mock data for different charts
-  const viewsData = [
-    { name: 'T1', youtube: 5 },
-    { name: 'T2', youtube: 8 },
-    { name: 'T3', youtube: 3 },
-    { name: 'T4', youtube: 12 },
-    { name: 'T5', youtube: 7 },
-    { name: 'T6', youtube: 15 },
-  ];
+  const { data: videos } = useListVideos();
+  const { data: videoStats } = useQuery({
+    queryKey: ['videoStats'],
+    queryFn: getAllVideoStats,
+  });
 
-  const engagementData = [
-    { name: 'Likes', value: 75, color: '#3b82f6' },
-    { name: 'Comments', value: 15, color: '#10b981' },
-    { name: 'Shares', value: 5, color: '#f59e0b' },
-    { name: 'Saves', value: 5, color: '#ef4444' },
-  ];
+  const viewsData = useMemo(() => {
+    if (!videos) return [];
+    
+    const videosByMonth = videos.reduce((acc, video) => {
+      const date = new Date(video.createdAt);
+      const monthKey = `T${date.getMonth() + 1}`;
+      if (!acc[monthKey]) acc[monthKey] = 0;
+      acc[monthKey]++;
+      return acc;
+    }, {} as Record<string, number>);
 
-  const performanceMetrics = [
-    { metric: 'Generated Leads', value: 8, color: '#ef4444', target: 20 },
-    { metric: 'Submitted Tickets', value: 2, color: '#10b981', target: 10 },
-    { metric: 'Server Allocation', value: 25, color: '#3b82f6', target: 50 },
-    { metric: 'Content Quality', value: 65, color: '#f59e0b', target: 80 },
-  ];
+    return Object.entries(videosByMonth).map(([month, count]) => ({
+      name: month,
+      youtube: count
+    }));
+  }, [videos]);
+
+  const engagementData = useMemo(() => {
+    if (!videoStats || videoStats.length === 0) return [];
+    
+    const totalEngagement = videoStats.reduce((acc, stat) => {
+      acc.likes += stat.likes;
+      acc.comments += stat.comments;
+      acc.views += stat.views;
+      return acc;
+    }, { likes: 0, comments: 0, views: 0 });
+
+    const total = totalEngagement.likes + totalEngagement.comments;
+    if (total === 0) return [];
+
+    return [
+      { name: 'Likes', value: Math.round((totalEngagement.likes / total) * 100), color: '#3b82f6' },
+      { name: 'Comments', value: Math.round((totalEngagement.comments / total) * 100), color: '#10b981' },
+      { name: 'Views Ratio', value: Math.round((totalEngagement.views / (totalEngagement.views + total)) * 100), color: '#f59e0b' },
+    ];
+  }, [videoStats]);
+
+  const performanceMetrics = useMemo(() => {
+    if (!videos || !videoStats) return [];
+    
+    const completedVideos = videos.filter(v => v.status === 'COMPLETED').length;
+    const youtubeVideos = videos.filter(v => v.platform === 'YOUTUBE').length;
+    const avgViews = videoStats.length > 0 ? videoStats.reduce((sum, stat) => sum + stat.views, 0) / videoStats.length : 0;
+    const avgLikes = videoStats.length > 0 ? videoStats.reduce((sum, stat) => sum + stat.likes, 0) / videoStats.length : 0;
+    
+    return [
+      { metric: 'Video Completion Rate', value: Math.round((completedVideos / videos.length) * 100), color: '#ef4444', target: 90 },
+      { metric: 'YouTube Upload Rate', value: Math.round((youtubeVideos / videos.length) * 100), color: '#10b981', target: 80 },
+      { metric: 'Average Views Performance', value: Math.min(Math.round((avgViews / 1000) * 100), 100), color: '#3b82f6', target: 70 },
+      { metric: 'Engagement Quality', value: Math.min(Math.round((avgLikes / 100) * 100), 100), color: '#f59e0b', target: 60 },
+    ];
+  }, [videos, videoStats]);
 
   const CustomTooltip = ({ active, payload, label }: { active?: boolean; payload?: Array<{ color: string; dataKey: string; value: number }>; label?: string }) => {
     if (active && payload && payload.length) {

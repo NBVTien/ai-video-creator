@@ -48,12 +48,12 @@ export default function ResourceSetting({ onGenerateResources, isGenerating }: R
   const [imageStyle, setImageStyle] = useState("Thực tế");
 
   // Options
-  const scriptStyles = ["Chuyên nghiệp", "Thân thiện", "Hài hước", "Nghiêm túc", "Sáng tạo"];
-  const scriptModels = ["Gemini", "Cloudflare"];
+  const scriptStyles = ["Chuyên nghiệp", "Thân thiện", "Hài hước", "Nghiêm túc"];
+  const scriptModels = ["Gemini"];
   const audioGenders = ["Nam", "Nữ"];
   const audioLanguages = ["Tự động", "English", "Tiếng Việt"];
   const audioModels = ["AzureTTS", "GoogleTTS"];
-  const imageStyles = ["Thực tế", "Hoạt hình", "Nghệ thuật", "Tối giản", "Cổ điển", "Anime", "Ghibli"];
+  const imageStyles = ["Thực tế", "Hoạt hình", "Nghệ thuật", "Anime", "Ghibli"];
 
   // Data mappings
   const scriptModelMap: Record<string, string> = {
